@@ -1,0 +1,216 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Bitbucket Server</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="bb-server-http"
+                  title="Bitbucket Server"
+                  environment="web"
+                  feedback-link="https://github.com/armory/documentation/issues">
+
+      <google-codelab-step label="CodeLabs Overview" duration="0">
+        <p><strong>Last Updated:</strong> 2019-08-20              </p>
+<p>Are you trying to create Spinnaker deployment pipelines that get triggered whenever user pushes commits in a on-premise Bitbucket server repository? This codelab will show you how to integrate <strong>on-premise Bitbucket server</strong> with <strong>Spinnaker</strong> using <strong>HTTP artifact</strong> to accomplish this objective. </p>
+<aside class="warning"><p><strong>Caution:</strong> To simplify this codelab, and explain the fundamentals, we&#39;re using Bitbucket server <strong>5.1x version.  </strong>Bitbucket API patterns might vary in other server versions. </p>
+</aside>
+<p><strong>Resources:</strong></p>
+<ul>
+<li><a href="https://www.spinnaker.io/reference/artifacts-with-artifactsrewrite/types/http-file/" target="_blank">Use HTTP file artifact in pipeline</a></li>
+<li><a href="https://www.spinnaker.io/setup/artifacts/http/" target="_blank">Config HTTP file credentials</a></li>
+<li><a href="https://confluence.atlassian.com/bitbucket/manage-webhooks-735643732.html" target="_blank">Config Webhooks on Bitbucket server</a></li>
+<li><a href="https://confluence.atlassian.com/bitbucketserver0511/administering-bitbucket-server/managing-add-ons/post-service-webhook-for-bitbucket-server" target="_blank">Config Web Post Hooks on Bitbucket server</a></li>
+</ul>
+
+
+      </google-codelab-step>
+
+      <google-codelab-step label="Bitbucket Webhook Options" duration="1">
+        <p>When integrating Bitbucket server with Spinnaker or any external server, you have two triggering options:  </p>
+<ol type="1" start="1">
+<li><strong>Webhooks </strong></li>
+<li><strong>Hooks aka Web Post hooks </strong></li>
+</ol>
+<p>In this Armory codelab we are going to use two options and show how to configure spinnaker pipeline to deploy Kubernetes deployment. </p>
+
+
+      </google-codelab-step>
+
+      <google-codelab-step label="Http Artifact Option" duration="1">
+        <p>In Spinnaker, an artifact is an object that references an external resource. An artifact can be fetched using a URI. Such resources could be many things such as.</p>
+<ol type="1" start="1">
+<li><strong>A file stored in Bitbucket server</strong></li>
+<li>A docker image</li>
+<li>An object in S3 or GCS </li>
+<li>An Amazon Machine Image  </li>
+</ol>
+<p>An HTTP file artifact is a reference to a file stored in plaintext and reachable via HTTP. These artifacts are generally consumed by stages in a pipeline that read configuration from text files, such as a Deploy Manifest stage. A file represented by an HTTP file artifact can be downloaded using HTTP Basic authentication.</p>
+<p>In this Armory codelab we are going to use <strong>HTTP artifact </strong>option and show how to configure spinnaker pipeline &amp; stages to deploy Kubernetes deployment. </p>
+
+
+      </google-codelab-step>
+
+      <google-codelab-step label="Create Webhooks" duration="4">
+        <p>Webhooks provides a way to configure Bitbucket server to make requests to your spinnaker (or another external service) whenever certain events occur. As a prerequisite you need Spinnaker API&#39;s endpoint that is publicly reachable. </p>
+<h2 is-upgraded><strong>Advantage of Webhooks</strong></h2>
+<p>Without webhooks, if you want to detect events in Bitbucket server, you need to poll the API. However, polling the API is inconvenient, inefficient and error-prone. </p>
+<h2 is-upgraded><strong>Creating Webhooks</strong></h2>
+<p>You can create a webhook through Bitbucket. The administrators of a repository are the only users who can create a webhook on that repository. Use the following steps to create a webhook on a repository in Bitbucket. </p>
+<ol type="1" start="1">
+<li>From Bitbucket, open the repository where you want to add the webhook.</li>
+<li>Click the <strong>Repository Settings</strong> link on the left side at the bottom.</li>
+<li>From the links on the <strong>Repository Settings</strong> page, click the <strong>Webhooks</strong> link.</li>
+<li>Click the <strong>Create webhook</strong> button to create a webhook for the repository. The <strong>Create  webhook</strong> page appears as:</li>
+</ol>
+<p class="image-container"><img style="width: 624.00px" src="https://storage.cloud.google.com/armory-codelabs-staging/codelabs/codelabs/bb-server-http/img/9421766920fa9235.png"></p>
+<ol type="1" start="5">
+<li>Enter a<strong> Name </strong>with a short description of the webook,  eg: <strong>&#34;Spinnaker http&#34;</strong></li>
+<li>Enter the <strong>URL</strong> to the spinnaker or external server.</li>
+</ol>
+<ol type="1" start="1">
+<li>Example: <strong>https://your-spin-gate-domain-name.com/webhooks/webhook/stash  </strong></li>
+<li>Replace domain name appropriately. </li>
+</ol>
+<ol type="1" start="7">
+<li>Select <strong>Events </strong>as triggers for webhook. Eg: <strong>Push </strong></li>
+<li>Ensure that webhook is in <strong>Active</strong> status.</li>
+<li>Click <strong>Create</strong> to the register this webhook under this repository.</li>
+</ol>
+<p>When an event associated with a webhook occurs, Bitbucket server sends a request to the webhook URL containing the event payload.</p>
+<aside class="warning"><p><strong>Note:</strong> You need to know the http(s) endpoint of Spinnaker or external server. The URL path should have the following pattern: <strong>webhooks/webhook/stash </strong></p>
+</aside>
+
+
+      </google-codelab-step>
+
+      <google-codelab-step label="Add Hooks" duration="4">
+        <p>While webhooks are simple notification mechanisms to external server like Spinnaker, <strong>Hooks </strong>aka <strong>Web Post hooks</strong> in Bitbucket server provides a way to control different parts of the git workflow. </p>
+<p>Bitbucket server POSTs to the service URL (Spinnaker API endpoint) you specify. The service receives a POST whenever the user pushes to the repository. The content type header of the POST has an application/json type. The content is a JSON payload that represents the repository push.</p>
+<h2 is-upgraded><strong>Creating Hooks aka Web Post hooks</strong></h2>
+<p>You can create a web post hook through Bitbucket. The administrators of a repository are the only users who can create a hook on that repository. Use the following steps to create a Post hook on a repository in Bitbucket. </p>
+<ol type="1" start="1">
+<li>From Bitbucket, open the repository where you want to add the hook</li>
+<li>Click the <strong>Repository Settings</strong> link on the left side at the bottom.</li>
+<li>From the links on the <strong>Repository Settings</strong> page, click the <strong>Hooks</strong> link.</li>
+<li>Click <strong>Add hook</strong> button on the top right side.</li>
+<li>Search and Install <strong>Web Post Hooks for BitBucket Server. </strong></li>
+<li>Click Enable for the &#34;Post-Receive Webhooks&#39; item. </li>
+<li>Enter the <strong>URL</strong> to the spinnaker or external server.</li>
+</ol>
+<ol type="1" start="1">
+<li>Example: <strong>https://your-spin-gate-domain-name.com/webhooks/git/stash  </strong></li>
+<li>Replace domain name appropriately. </li>
+<li>You can add up to 5 URLs.</li>
+</ol>
+<ol type="1" start="8">
+<li>Press <strong>Save. </strong></li>
+</ol>
+<p>When a <strong>git</strong> event occurs, Bitbucket server sends a POST request to the webhook URL containing the event payload.</p>
+<p><strong>Hooks page appears as:</strong></p>
+<p class="image-container"><img style="width: 624.00px" src="https://storage.cloud.google.com/armory-codelabs-staging/codelabs/codelabs/bb-server-http/img/8aa0cbaa6cb79828.png"></p>
+<p><strong>Marketplace to find Hooks and new apps appears as</strong>:</p>
+<p class="image-container"><img style="width: 606.50px" src="https://storage.cloud.google.com/armory-codelabs-staging/codelabs/codelabs/bb-server-http/img/1c6f75d9cf99b511.png"></p>
+<aside class="warning"><p><strong>Note:</strong> You need to know the http(s) endpoint of Spinnaker or external server. The URL path should have the following pattern: <strong>webhooks/git/stash </strong></p>
+</aside>
+
+
+      </google-codelab-step>
+
+      <google-codelab-step label="Pipeline Trigger Options" duration="1">
+        <p>When configuring Spinnaker pipeline trigger for Bitbucket server, you have two triggering options:  </p>
+<ol type="1" start="1">
+<li><strong>Webhook trigger type</strong></li>
+<li><strong>Git trigger type  </strong></li>
+</ol>
+<p>In this Armory codelab we are going to use two options and show how to trigger spinnaker pipeline to deploy Kubernetes deployment when user pushes commit to Bitbucket server repository.  </p>
+<p>An HTTP file artifact is a reference to a file stored in plaintext and reachable via HTTP. These artifacts are generally consumed by stages that read configuration from text files, such as a Deploy Manifest stage.</p>
+<p>A file represented by an HTTP file artifact can be downloaded using HTTP Basic authentication.</p>
+
+
+      </google-codelab-step>
+
+      <google-codelab-step label="Create Git Trigger" duration="3">
+        <p>This automated trigger type function uses Bitbucket <strong>Web Post hooks</strong> for delivering messages to Spinnaker, and must be configured to send messages to Spinnaker&#39;s event bus as shown earlier. </p>
+<h2 is-upgraded><strong>Creating Git trigger </strong></h2>
+<p>You can configure and execute a Spinnaker pipeline automatically on a git push on Bitbucket server repository via <strong>Web Post hooks</strong>. Use the following steps to create a <strong>trigger </strong>of type<strong> Git </strong>from <strong>pipeline configuration</strong> page under <strong>automated triggers</strong> sub-section. </p>
+<ol type="1" start="1">
+<li>Select type as <strong>Git</strong></li>
+<li>Select repo type as <strong>stash </strong>to indicate<strong> Bitbucket server </strong>rather than cloud</li>
+<li>Enter Bitbucket server project key ( All caps)</li>
+<li>Enter Repository name</li>
+<li>Enter Branch name </li>
+<li>Check <strong>Trigger Enabled</strong></li>
+</ol>
+<p><strong>Automated Triggers sub-section appears as:</strong></p>
+<p class="image-container"><img style="width: 624.00px" src="https://storage.cloud.google.com/armory-codelabs-staging/codelabs/codelabs/bb-server-http/img/5818c8dfe47c20bd.png"></p>
+
+
+      </google-codelab-step>
+
+      <google-codelab-step label="Create Webhook Trigger" duration="3">
+        <p>This automated trigger type function uses Bitbucket <strong>Webhooks</strong> for delivering messages to Spinnaker, and must be configured to send messages to Spinnaker&#39;s event bus as shown earlier. </p>
+<h2 is-upgraded><strong>Creating Webhook trigger </strong></h2>
+<p>You can configure and execute a Spinnaker pipeline automatically on a user commit push on Bitbucket server repository via <strong>Webhooks</strong>. Use the following steps to create a <strong>trigger </strong>of type<strong> Webhook </strong>from <strong>pipeline configuration</strong> page under <strong>automated triggers</strong> sub-section. </p>
+<ol type="1" start="1">
+<li>Select type as <strong>Webhook</strong></li>
+<li>Refer Spinnaker  webhook endpoint for Bitbucket server. Similar URI is used in <strong>Create Webhook</strong> section of this codelab to config Bitbucket repository setting.</li>
+<li>Select source as <strong>stash </strong>to indicate<strong> Bitbucket server </strong>rather than cloud</li>
+<li>Check <strong>Trigger Enabled</strong></li>
+</ol>
+<p><strong>Automated Triggers sub-section appears as:</strong></p>
+<p class="image-container"><img style="width: 624.00px" src="https://storage.cloud.google.com/armory-codelabs-staging/codelabs/codelabs/bb-server-http/img/f6616c6efc9dfc5c.png"></p>
+
+      </google-codelab-step>
+
+      <google-codelab-step label="Expected Artifact" duration="2">
+        <p>Since Bitbucker server can contain many repositories, one can assign expected artifact to ensure only changes in a specific repository can trigger and run the pipeline. When a trigger has one or more expected artifacts, it only runs when each expected artifact can bind to one of the artifacts in the trigger&#39;s payload. </p>
+<p>An HTTP file artifact is a reference to a file stored in plaintext and reachable via HTTP. These artifacts are generally consumed by stages in a pipeline that read configuration from text files, such as a Deploy Manifest stage. A file represented by an HTTP file artifact can be downloaded using HTTP Basic authentication.</p>
+<h2 is-upgraded><strong>Set Expected Artifact  </strong></h2>
+<p>You can configure and execute a Spinnaker pipeline automatically for user events like commit push on Bitbucket server repository. An HTTP file artifact can help consume a file stored in Bitbucker server repository. Use the following steps to set <strong>artifacts </strong>for a <strong>pipeline configuration</strong> under <strong>expected artifacts </strong>sub-section. </p>
+<ol type="1" start="1">
+<li>Select <strong>Custom</strong> option under <strong>Match against </strong>field</li>
+<li>Select type as <strong>http/file </strong></li>
+<li>Enter human friendly reference name</li>
+<li>Leave version &amp; location field blank</li>
+<li>Enter valid API, complete URL of an artifact in a given Bitbucket server repository.</li>
+<li>Repeat similar setting for <strong>Default artifact.</strong></li>
+<li><strong>Save changes</strong></li>
+</ol>
+<p class="image-container"><img style="width: 601.50px" src="https://storage.cloud.google.com/armory-codelabs-staging/codelabs/codelabs/bb-server-http/img/fe83f65a94c0d13b.png"></p>
+<aside class="warning"><p><strong>Caution:</strong> Bitbucket HTTP artifact endpoint pattern varies by Bitbucket server version. For Bitbucket 5.1x version, following URL patterns are valid. </p>
+<ol type="1" start="1">
+<li>http://yourbitbucketserverdomain/projects/MAIN/repos/spin/raw/nginx.yaml?at=refs%2Fheads%2Fmaster </li>
+<li>http:/yourbitbucketserverdomain/rest/api/1.0/projects/MAIN/repos/spin/raw/nginx.yaml?at=refs%2Fheads%2Fmaster</li>
+</ol>
+</aside>
+
+
+      </google-codelab-step>
+
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+
+</body>
+</html>

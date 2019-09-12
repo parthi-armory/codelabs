@@ -1,0 +1,29 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://armorycodelabs.netlify.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2019-08-21T16:53:51Z",
+  "id": "bb-server-http",
+  "duration": 19,
+  "title": "Bitbucket Server",
+  "authors": "Parthiban srinivasan, Armory",
+  "summary": "Codelabs on integrating on-premise bitbucket server to trigger spinnaker pipelines using http artifact",
+  "source": "1YVLujGTdJyU5eyAr1OjlT7YnRruUCAVd1ym6lbIgNZE",
+  "theme": "spinnaker",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "Spinnaker",
+    "Bitbucket",
+    "Training"
+  ],
+  "tags": [
+    "2019",
+    "web",
+    "spinnaker-summit"
+  ],
+  "feedback": "https://github.com/armory/documentation/issues",
+  "url": "bb-server-http"
+}

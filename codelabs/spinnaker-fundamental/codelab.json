@@ -1,0 +1,27 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2019-07-22T03:31:29Z",
+  "id": "spinnaker-fundamental",
+  "duration": 24,
+  "title": "Spinnaker Fundamental",
+  "authors": "Parthiban srinivasan",
+  "summary": "In this codelab, i am testing codelab",
+  "source": "1VyUGwJnnXUNvyI8nLj7tHfFMBIG9efVMS4300mlrk9s",
+  "theme": "spinnaker",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "Spinnaker"
+  ],
+  "tags": [
+    "io2019",
+    "spinnaker-summit",
+    "web"
+  ],
+  "feedback": "https://github.com/googlecodelabs/your-first-pwapp/issues",
+  "url": "spinnaker-fundamental"
+}
