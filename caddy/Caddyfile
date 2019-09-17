@@ -4,9 +4,9 @@ armorycodelabs.com {
     
     git {
         repo https://github.com/parthi-armory/codelabs.git  
-        path /home/parthiban_srinivasan/git/
+        path /home/parthiban_srinivasan/
         hook /github_hook 
-        interval 300
+        interval 60
     }
     
     log /home/parthiban_srinivasan/log/caddy.access.log {
