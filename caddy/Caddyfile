@@ -1,10 +1,12 @@
 armorycodelabs.com {
     tls parthi.geo@gmail.com
+    root /home/parthiban_srinivasan/
     
     git {
         repo https://github.com/parthi-armory/codelabs.git  
-        path ~/git/
+        path /home/parthiban_srinivasan/git/
         hook /github_hook 
+        hook_type generic
         interval 300
     }
     
