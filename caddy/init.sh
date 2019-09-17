@@ -9,18 +9,21 @@ sudo apt install curl
 
 #curl https://getcaddy.com | bash -s personal
 curl https://getcaddy.com | bash -s personal consul,hook.service,http.authz,http.cache,http.cors,http.expires,http.git,http.login,http.prometheus,http.pubsub,http.ratelimit,redis,tls.dns.dnspod,tls.dns.googlecloud
-git clone https://github.com/parthi-armory/codelabs.git
 
-# install setcap 
+# install setcap to enable lower port
 sudo apt-get install libcap2-bin
 sudo setcap 'cap_net_bind_service=+ep' /usr/local/bin/caddy
-
-# enable lower port
-ulimit -n 8192
 
 # dir for caddy config
 sudo mkdir /etc/caddy 
 
-cd ~/codelabs
+sudo cp -r . /etc/caddy/
+
+# enable lower port
+ulimit -n 8192
+
+caddy -conf /etc/caddy/Caddyfile
+
+# git clone https://github.com/parthi-armory/codelabs.git
 #caddy -host codelabs.mlcrafting.com
 #sudo caddy -port 80
