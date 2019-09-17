@@ -6,7 +6,7 @@
   "updated": "2019-08-21T16:53:51Z",
   "id": "git-server-http",
   "duration": 19,
-  "title": "Bitbucket Server",
+  "title": "Git bucket Server",
   "authors": "Parthiban srinivasan, Armory",
   "summary": "Codelabs on integrating on-premise gitlab server to trigger spinnaker pipelines using http artifact",
   "source": "1YVLujGTdJyU5eyAr1OjlT7YnRruUCAVd1ym6lbIgNZE",
