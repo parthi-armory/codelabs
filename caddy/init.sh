@@ -22,5 +22,5 @@ ulimit -n 8192
 sudo mkdir /etc/caddy 
 
 cd ~/codelabs
-caddy -host codelabs.mlcrafting.com
+#caddy -host codelabs.mlcrafting.com
 #sudo caddy -port 80
